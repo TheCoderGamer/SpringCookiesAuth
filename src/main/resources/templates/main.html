@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <form action="/logout" method="post">
+        <input type="hidden" name="username" th:value="${user}">
+        <input type="submit" value="Logout">
+    </form>
+    <form action="/logout-force" method="post">
+        <input type="hidden" name="username" th:value="${user}">
+        <input type="submit" value="Hidden logout">
+    </form>
+    <h1 th:text="${'Bienvenido ' + user}"></h1>
+</body>
+</html>

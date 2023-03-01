@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- avoid favicon.ico request-->
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <script type="text/javascript" th:src="@{/js/login.js}"></script>
+
+<!--
+    > Receive params from controller:
+        - No user last login, no cookie: no params
+        - User correct, request password: user
+        - User last login: lastUsers array
+        - Wrong username or password: error
+        - User logged in: should not be in this page
+    > Send params to controller:
+        - Form phase user: user
+        - Form phase password: username, password
+-->
+
+
+</head>
+<body onload="addOtherUserOption()">
+    <form action="/login" method="post">
+
+        <h1>Login</h1>
+
+        <!-- USER -->
+
+        <label th:if="${lastUsers != null}" for="lastUser">Last users:
+            <select name="username" id="lastUser">
+                <option th:each="user : ${lastUsers}" th:value="${user}" th:text="${user}"></option>
+            </select>
+        </label>
+
+        <label th:if="${lastUsers == null}">User:
+            <input th:if="${user == null}" type="text" name="username" placeholder="Enter username">
+            <input th:if="${user != null}" type="text" name="username" th:value="${user}" readonly>
+        </label>
+
+        <br/>
+
+        <!-- PASSWORD -->
+
+        <label th:if="${user != null || lastUsers != null}" for="password">Password:
+            <input type="password" name="password" placeholder="Password" id="password">
+        </label>
+
+        <!-- ERROR -->
+
+        <span th:if="${error != null}" class="error" th:text="${error}"></span>
+
+        <input type="submit" value="Login">
+
+
+    </form>
+</body>
+</html>

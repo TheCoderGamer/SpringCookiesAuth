@@ -9,7 +9,6 @@ Es una aplicacion web que cumple con los [siguientes requisitos](https://github.
 **Enlace a el commit de github:** [Commit](https://github.com/TheCoderGamer/SpringCookiesAuth/commit/d2c52001bdd7ac31b879b1cc2d3b91a26e3589ce).
 
 **Tiempo estimado:** 15h
-
 **Tiempo empleado:** 8h
 
 

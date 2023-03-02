@@ -6,6 +6,7 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- avoid favicon.ico request-->
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <script type="text/javascript" th:src="@{/js/login.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!--
     > Receive params from controller:
@@ -37,6 +38,7 @@
         <label th:if="${lastUsers == null}">User:
             <input th:if="${user == null}" type="text" name="username" placeholder="Enter username">
             <input th:if="${user != null}" type="text" name="username" th:value="${user}" readonly>
+            <a href="#" onclick="recoverUser()">Forgot user?</a>
         </label>
 
         <br/>
@@ -45,6 +47,8 @@
 
         <label th:if="${user != null || lastUsers != null}" for="password">Password:
             <input type="password" name="password" placeholder="Password" id="password">
+            See password<input type="checkbox" onclick="seePass()">
+            <a href="#" onclick="recoverPassword()">Forgot password?</a>
         </label>
 
         <!-- ERROR -->

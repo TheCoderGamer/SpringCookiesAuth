@@ -15,5 +15,9 @@
         <input type="submit" value="Hidden logout">
     </form>
     <h1 th:text="${'Bienvenido ' + user}"></h1>
+    <div>
+        <h2>Has iniciado sesion <span th:text="${timesLoggedIn}"/> veces.</h2>
+        <h2>Marca: <span th:text="${marca}"/>, Modelo: <span th:text="${modelo}"/>, Version: <span th:text="${version}"/></h2>
+    </div>
 </body>
 </html>

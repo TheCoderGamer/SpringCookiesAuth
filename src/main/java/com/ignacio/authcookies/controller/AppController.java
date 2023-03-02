@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import eu.bitwalker.useragentutils.*;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -50,13 +51,13 @@ public class AppController {
             for (Cookie cookie : cookies) {
 
                 // Check cookie
-                if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged-in")) {
+                if (cookie.getName().startsWith("user-") && cookie.getValue().startsWith("logged_in")) {
 
                     // User logged in, redirect to main
                     mAV.addObject("user", cookie.getName().replace("user-", ""));
                     mAV.setViewName("redirect:/main");
                     return mAV;
-                } else if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged-out")) {
+                } else if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged_out")) {
 
                     // User logged out, continue checking
                     lastUsers.add(cookie.getName().replace("user-", ""));
@@ -117,7 +118,7 @@ public class AppController {
             // Check password
             } else if (getUsers().get(username).equals(password)) {
                 // Auth correct, set cookie
-                Cookie cookie = new Cookie("user-"+username, "logged-in");
+                Cookie cookie = new Cookie("user-"+username, "logged_in-1");
                 response.addCookie(cookie);
                 mAV.setViewName("redirect:/");
                 return mAV;
@@ -131,7 +132,7 @@ public class AppController {
                 if (cookies != null) {
                     ArrayList<String> lastUsers = new ArrayList<>();
                     for (Cookie cookie : cookies) {
-                        if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged-out")) {
+                        if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged_out")) {
                             lastUsers.add(cookie.getName().replace("user-", ""));
                         }
                     }
@@ -156,7 +157,7 @@ public class AppController {
         mAV = new ModelAndView();
 
         // Set user as logged-out
-        Cookie cookie = new Cookie("user-"+username, "logged-out");
+        Cookie cookie = new Cookie("user-"+username, "logged_out");
         response.addCookie(cookie);
 
         mAV.setViewName("redirect:/");
@@ -180,35 +181,67 @@ public class AppController {
         return mAV;
     }
 
-    @GetMapping("/delete-last-users")
-    public ModelAndView deleteLastUsers(
-            HttpServletResponse response,
-            HttpServletRequest request) {
+    @GetMapping("/main")
+    public ModelAndView main(@RequestParam String user, HttpServletRequest request, HttpServletResponse response) {
 
         mAV = new ModelAndView();
 
-        // Delete cookies
+        // Check cookie logged times and increment
         Cookie[] cookies = request.getCookies();
+        String times = null;
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().startsWith("user-") && cookie.getValue().equals("logged-out")) {
-                    cookie.setMaxAge(0);
+                if (cookie.getName().equals("user-"+user) && cookie.getValue().startsWith("logged_in")) {
+                    int times2 = Integer.parseInt(cookie.getValue().split("-")[1]);
+                    times2++;
+                    times = String.valueOf(times2);
+                    cookie.setValue("logged_in-" + times);
                     response.addCookie(cookie);
+                    break;
                 }
             }
         }
 
-        mAV.setViewName("redirect:/");
+        if (times != null){
+            mAV.addObject("timesLoggedIn", times);
+        }
+
+        // Obtain brand, model and version of browser
+        String userAgentString = request.getHeader("User-Agent");
+        UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+
+        String marca = userAgent.getBrowser().getManufacturer().toString();
+        String modelo = userAgent.getBrowser().getName();
+        String version = userAgent.getBrowserVersion().toString();
+        mAV.addObject("marca", marca);
+        mAV.addObject("modelo", modelo);
+        mAV.addObject("version", version);
+
+
+        mAV.addObject("user", user);
+        mAV.setViewName("main");
+        System.out.println("User logged in: " + user);
         return mAV;
     }
 
-    @GetMapping("/main")
-    public ModelAndView main(@RequestParam String user) {
+    @PostMapping("/recover-password")
+    @ResponseBody
+    public String recoverPassword(@RequestBody Map<String, String> usuario) {
+        String username = usuario.get("usuario");
+        String pass = getUsers().get(username);
+        return pass;
+    }
 
-        mAV = new ModelAndView();
-        mAV.addObject("user", user);
-        mAV.setViewName("main");
-        return mAV;
+    @PostMapping("/recover-user")
+    @ResponseBody
+    public String recoverUser() {
+        // Recover all users
+        StringBuilder users = new StringBuilder();
+        for (String user : getUsers().keySet()) {
+            users.append(user).append(", ");
+        }
+
+        return users.substring(0, users.length()-2);
     }
 }
 

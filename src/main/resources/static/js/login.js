@@ -42,3 +42,45 @@ function otherUser() {
     select.parentNode.insertBefore(input, select.nextSibling);
     select.name = "lastUser";
 }
+
+
+function recoverPassword() {
+    var username = document.getElementsByName("username")[0].value;
+    var data = { usuario: username };
+
+    $.ajax({
+        type: "POST",
+        url: "/recover-password",
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "text",
+        success: function (pass) {
+            alert("Your password is: " + pass);
+        },
+        error: function () {
+            alert("Error recovering password");
+        },
+    });
+}
+function recoverUser() {
+    $.ajax({
+        type: "POST",
+        url: "/recover-user",
+        contentType: "application/json; charset=utf-8",
+        success: function (usersList) {
+            alert("User list: " + usersList);
+        },
+        error: function () {
+            alert("Error");
+        },
+    });
+}
+
+function seePass() {
+    var x = document.getElementById("password");
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+}
